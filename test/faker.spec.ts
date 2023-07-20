@@ -108,37 +108,37 @@ describe('faker', () => {
     });
   });
 
-  describe('fork', () => {
-    it('should create a fork that returns the same values as the original', () => {
-      const fork1 = faker.fork();
-      const fork2 = faker.fork();
-      const fork3 = fork1.fork();
+  describe('clone', () => {
+    it('should create a clone that returns the same values as the original', () => {
+      const clone1 = faker.clone();
+      const clone2 = faker.clone();
+      const clone3 = clone1.clone();
 
-      expect(fork1).not.toBe(faker);
-      expect(fork2).not.toBe(faker);
-      expect(fork3).not.toBe(faker);
-      expect(fork1).not.toBe(fork2);
-      expect(fork1).not.toBe(fork3);
-      expect(fork2).not.toBe(fork3);
+      expect(clone1).not.toBe(faker);
+      expect(clone2).not.toBe(faker);
+      expect(clone3).not.toBe(faker);
+      expect(clone1).not.toBe(clone2);
+      expect(clone1).not.toBe(clone3);
+      expect(clone2).not.toBe(clone3);
 
       const valueOrg = faker.number.int();
-      expect(fork1.number.int()).toBe(valueOrg);
-      expect(fork2.number.int()).toBe(valueOrg);
-      expect(fork3.number.int()).toBe(valueOrg);
+      expect(clone1.number.int()).toBe(valueOrg);
+      expect(clone2.number.int()).toBe(valueOrg);
+      expect(clone3.number.int()).toBe(valueOrg);
 
-      const value1 = fork1.number.int();
+      const value1 = clone1.number.int();
       expect(faker.number.int()).toBe(value1);
-      expect(fork2.number.int()).toBe(value1);
-      expect(fork3.number.int()).toBe(value1);
+      expect(clone2.number.int()).toBe(value1);
+      expect(clone3.number.int()).toBe(value1);
 
-      const value2 = fork2.number.int();
-      expect(fork1.number.int()).toBe(value2);
+      const value2 = clone2.number.int();
+      expect(clone1.number.int()).toBe(value2);
       expect(faker.number.int()).toBe(value2);
-      expect(fork3.number.int()).toBe(value2);
+      expect(clone3.number.int()).toBe(value2);
 
-      const value3 = fork3.number.int();
-      expect(fork1.number.int()).toBe(value3);
-      expect(fork2.number.int()).toBe(value3);
+      const value3 = clone3.number.int();
+      expect(clone1.number.int()).toBe(value3);
+      expect(clone2.number.int()).toBe(value3);
       expect(faker.number.int()).toBe(value3);
     });
   });

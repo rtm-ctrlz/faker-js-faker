@@ -553,7 +553,7 @@ export class Faker {
   /**
    * Creates a new instance of Faker with the same state as this instance.
    * This method is idempotent and does not consume any seed values.
-   * The forked instance will produce the same values as the original, given that the methods are called in the same order.
+   * The cloned instance will produce the same values as the original, given that the methods are called in the same order.
    * This is useful for creating identical complex objects:
    * - One to be mutated by the method under test
    * - and the other one serves as a comparison.
@@ -567,16 +567,16 @@ export class Faker {
    *
    * faker.seed(42);
    * // Creates a new instance with the same state as the current instance
-   * const fork = faker.fork();
-   * // The forked instance will produce the same values as the original
-   * fork.number.int(10); // 4 (forked 1st call)
-   * fork.number.int(10); // 8 (forked 2nd call)
+   * const clone = faker.clone();
+   * // The clone instance will produce the same values as the original
+   * clone.number.int(10); // 4 (cloned 1st call)
+   * clone.number.int(10); // 8 (cloned 2nd call)
    *
    * // The original instance is not affected
    * faker.number.int(10); // 4 (1st call)
    * faker.number.int(10); // 8 (2nd call)
    */
-  fork(): Faker {
+  clone(): Faker {
     const instance = new Faker({
       locale: this.rawDefinitions,
     });
@@ -590,9 +590,9 @@ export class Faker {
    * This consumes a single value from the original instance to initialize the seed of the derived instance, and thus has a one-time effect on subsequent calls.
    * The derived instance can be used to generate deterministic values based on the current seed without consuming a dynamic amount of seed values.
    * This is useful, if you wish to generate a complex object (e.g. a Person) and might want to add a property to it later.
-   * If the Person is created from a derived instance, then adding or removing properties from the Person doesn't have any impact on the other data, generated using the original instance (except from the derive call itself).
+   * If the Person is created from a derived instance, then adding or removing properties from the Person doesn't have any impact on the following data, generated using the original instance (except from the derive call itself).
    *
-   * @see faker.fork If you want to create an exact clone of this Faker instance without consuming a seed value.
+   * @see faker.clone If you want to create an exact clone of this Faker instance without consuming a seed value.
    *
    * @example
    * faker.seed(42);
@@ -610,11 +610,8 @@ export class Faker {
    * faker.number.int(10); // 8 (2nd call) <- This is same as before
    */
   derive(): Faker {
-    const instance = new Faker({
-      locale: this.rawDefinitions,
-    });
+    const instance = this.clone();
     instance.seed(this.number.int());
-    instance.setDefaultRefDate(this._defaultRefDate);
     return instance;
   }
 }
