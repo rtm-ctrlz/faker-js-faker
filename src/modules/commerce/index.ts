@@ -1,4 +1,5 @@
 import type { Faker } from '../../faker';
+import { bindThisToMemberFunctions } from '../../internal/bind-this-to-member-functions';
 import { deprecated } from '../../internal/deprecated';
 
 /**
@@ -6,24 +7,15 @@ import { deprecated } from '../../internal/deprecated';
  *
  * ### Overview
  *
- * For a long product name like `'Incredible Soft Gloves'`, use [`productName()`](https://next.fakerjs.dev/api/commerce.html#productname). The product names are generated from a list of adjectives, materials, and products, which can each be accessed separately using [`productAdjective()`](https://next.fakerjs.dev/api/commerce.html#productadjective), [`productMaterial()`](https://next.fakerjs.dev/api/commerce.html#productmaterial), and [`product()`](https://next.fakerjs.dev/api/commerce.html#product). You can also create a description using [`productDescription()`](https://next.fakerjs.dev/api/commerce.html#productdescription).
+ * For a long product name like `'Incredible Soft Gloves'`, use [`productName()`](https://fakerjs.dev/api/commerce.html#productname). The product names are generated from a list of adjectives, materials, and products, which can each be accessed separately using [`productAdjective()`](https://fakerjs.dev/api/commerce.html#productadjective), [`productMaterial()`](https://fakerjs.dev/api/commerce.html#productmaterial), and [`product()`](https://fakerjs.dev/api/commerce.html#product). You can also create a description using [`productDescription()`](https://fakerjs.dev/api/commerce.html#productdescription).
  *
- * For a department in a shop or product category, use [`department()`](https://next.fakerjs.dev/api/commerce.html#department).
+ * For a department in a shop or product category, use [`department()`](https://fakerjs.dev/api/commerce.html#department).
  *
- * You can also create a price using [`price()`](https://next.fakerjs.dev/api/commerce.html#price).
+ * You can also create a price using [`price()`](https://fakerjs.dev/api/commerce.html#price).
  */
 export class CommerceModule {
   constructor(private readonly faker: Faker) {
-    // Bind `this` so namespaced is working correctly
-    for (const name of Object.getOwnPropertyNames(
-      CommerceModule.prototype
-    ) as Array<keyof CommerceModule | 'constructor'>) {
-      if (name === 'constructor' || typeof this[name] !== 'function') {
-        continue;
-      }
-
-      this[name] = this[name].bind(this);
-    }
+    bindThisToMemberFunctions(this);
   }
 
   /**
