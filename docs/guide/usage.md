@@ -434,5 +434,5 @@ expect(user1).toEqual(user2); ✅
 ```
 
 ::: info Note
-Calling `faker.clone()` is idempotent. So you can call it as often as you want, it doesn't have an impact on the faker instance.
+Calling `faker.clone()` is idempotent. So you can call it as often as you want, it doesn't have an impact on the original faker instance.
 :::
