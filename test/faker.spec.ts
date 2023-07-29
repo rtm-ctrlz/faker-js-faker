@@ -121,10 +121,10 @@ describe('faker', () => {
       expect(clone1).not.toBe(clone3);
       expect(clone2).not.toBe(clone3);
 
-      const valueOrg = faker.number.int();
-      expect(clone1.number.int()).toBe(valueOrg);
-      expect(clone2.number.int()).toBe(valueOrg);
-      expect(clone3.number.int()).toBe(valueOrg);
+      const value0 = faker.number.int();
+      expect(clone1.number.int()).toBe(value0);
+      expect(clone2.number.int()).toBe(value0);
+      expect(clone3.number.int()).toBe(value0);
 
       const value1 = clone1.number.int();
       expect(faker.number.int()).toBe(value1);
