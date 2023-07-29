@@ -379,7 +379,7 @@ function createRandomAddress(faker: Faker): Address {
 }
 ```
 
-:::warning Warning
+::: warning Warning
 Migrating your existing data to either of these variants, will still change all data, but after that they are independent.
 So we recommend writing your methods like this from the start.
 :::
@@ -433,6 +433,6 @@ subscribeToNewsletter(user1);
 expect(user1).toEqual(user2); ✅
 ```
 
-:::info Note
+::: info Note
 Calling `faker.clone()` is idempotent. So you can call it as often as you want, it doesn't have an impact on the faker instance.
 :::
