@@ -430,7 +430,7 @@ The sole difference being more or less explicit about deriving a faker instance 
 ## Create identical complex objects
 
 If you want to create two identical objects, e.g. one to mutate and one to compare it to,
-then you can use `faker.clone()` to create a faker instance with the exact same settings and seed as the original.
+then you can use `faker.clone()` to create a faker instance with the same settings and seed as the original.
 
 ```ts
 const clonedFaker = faker.clone();
