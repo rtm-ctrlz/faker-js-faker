@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { allLocales, Faker, RandomModule } from '../src';
+import type { Faker, RandomModule, allLocales } from '../src';
 import { allFakers, fakerEN } from '../src';
 
 const IGNORED_MODULES = [

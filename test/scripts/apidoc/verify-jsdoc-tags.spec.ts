@@ -5,6 +5,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { initMarkdownRenderer } from '../../../scripts/apidoc/markdown';
 import { analyzeSignature } from '../../../scripts/apidoc/signature';
 import {
+  MISSING_DESCRIPTION,
   extractDeprecated,
   extractDescription,
   extractModuleFieldName,
@@ -12,7 +13,6 @@ import {
   extractSeeAlsos,
   extractSince,
   extractTagContent,
-  MISSING_DESCRIPTION,
 } from '../../../scripts/apidoc/typedoc';
 import { loadProjectModules } from './utils';
 
