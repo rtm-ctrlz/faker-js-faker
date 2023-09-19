@@ -77,7 +77,7 @@ export class SimpleFaker {
   }
 
   /** @internal */
-  private readonly _mersenne: Mersenne = mersenne();
+  protected readonly _mersenne: Mersenne = mersenne();
 
   readonly datatype: DatatypeModule = new DatatypeModule(this);
   readonly date: SimpleDateModule = new SimpleDateModule(this);
