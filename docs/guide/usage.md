@@ -301,7 +301,7 @@ function createRandomUser(): User {
   };
 }
 
-const users = Array.from({ length: 3 }).map(createRandomUser);
+const users = Array.from({ length: 3 }, () => createRandomUser());
 ```
 
 After some time you notice that you need a new column `createdDate`.
@@ -336,7 +336,7 @@ There are two solutions to that:
 1. Set the seed explicitly before creating the data for that row:
 
 ```ts
-const users = Array.from({ length: 3 }).map((_, i) => {
+const users = Array.from({ length: 3 }, (_, i) => {
   faker.seed(i);
   return createRandomUser();
 });
@@ -358,7 +358,7 @@ function createRandomUser(faker: Faker): User {
   };
 }
 
-const users = Array.from({ length: 3 }).map((_, i) => createRandomUser(faker));
+const users = Array.from({ length: 3 }, () => createRandomUser(faker));
 ```
 
 The `faker.derive()` call clones the instance and re-initializes the seed of the clone with a generated value from the original.
