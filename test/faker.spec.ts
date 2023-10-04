@@ -68,6 +68,24 @@ describe('faker', () => {
     });
   });
 
+  describe('randomizer', () => {
+    it('should be possible to provide a custom Randomizer', () => {
+      const randomizer = {
+        next: () => 0,
+        seed: () => void 0,
+        clone: () => randomizer,
+      };
+      const customFaker = new Faker({
+        locale: {},
+        randomizer,
+      });
+
+      expect(customFaker.number.int()).toBe(0);
+      expect(customFaker.number.int()).toBe(0);
+      expect(customFaker.number.int()).toBe(0);
+    });
+  });
+
   // This is only here for coverage
   // The actual test is in mersenne.spec.ts
   describe('seed()', () => {

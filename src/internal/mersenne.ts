@@ -1,3 +1,5 @@
+import type { Randomizer } from '../randomizer';
+
 /**
  * Copyright (c) 2022-2023 Faker
  *
@@ -71,7 +73,7 @@
  *
  * @internal
  */
-export default class MersenneTwister19937 {
+class MersenneTwister19937 {
   private readonly N = 624;
   private readonly M = 397;
   private readonly MATRIX_A = 0x9908b0df; // constant vector a
@@ -79,6 +81,22 @@ export default class MersenneTwister19937 {
   private readonly LOWER_MASK = 0x7fffffff; // least significant r bits
   private mt: number[] = new Array(this.N); // the array for the state vector
   private mti = this.N + 1; // mti==N+1 means mt[N] is not initialized
+
+  /**
+   * Creates a new instance of MersenneTwister19937.
+   *
+   * @param options The required options to initialize the instance.
+   * @param options.mt The state vector to use. The array will be copied.
+   * @param options.mti The state vector index to use.
+   */
+  constructor(options?: { mt: number[]; mti: number }) {
+    if (options != null && 'mt' in options) {
+      this.mt = options.mt.slice();
+      this.mti = options.mti;
+    } else {
+      this.initGenrand(Date.now() ^ (Math.random() * 0x100000000));
+    }
+  }
 
   /**
    * Returns a 32-bits unsigned integer from an operand to which applied a bit
@@ -164,11 +182,11 @@ export default class MersenneTwister19937 {
   /**
    * Initialize by an array with array-length.
    *
-   * @param initKey is the array for initializing keys
-   * @param keyLength is its length
+   * @param initKey Is the array for initializing keys.
    */
-  initByArray(initKey: number[], keyLength: number): void {
+  initByArray(initKey: number[]): void {
     this.initGenrand(19650218);
+    const keyLength = initKey.length;
     let i = 1;
     let j = 0;
     let k = this.N > keyLength ? this.N : keyLength;
@@ -237,11 +255,6 @@ export default class MersenneTwister19937 {
     if (this.mti >= this.N) {
       // generate N words at one time
       let kk: number;
-
-      // if initGenrand() has not been called a default initial seed is used
-      if (this.mti === this.N + 1) {
-        this.initGenrand(5489);
-      }
 
       for (kk = 0; kk < this.N - this.M; kk++) {
         y = this.unsigned32(
@@ -323,15 +336,45 @@ export default class MersenneTwister19937 {
   }
   // These real versions are due to Isaku Wada, 2002/01/09
 
-  backupState(): { mt: ReadonlyArray<number>; mti: number } {
-    return {
-      mt: this.mt.slice(),
-      mti: this.mti,
-    };
+  clone(): MersenneTwister19937 {
+    return new MersenneTwister19937({ mt: this.mt, mti: this.mti });
   }
+}
 
-  restoreState(state: { mt: ReadonlyArray<number>; mti: number }): void {
-    this.mt = state.mt.slice();
-    this.mti = state.mti;
-  }
+/**
+ * Generates a MersenneTwister19937 randomizer with 32 bits of precision.
+ *
+ * @internal
+ */
+export function generateMersenne32Randomizer(): Randomizer {
+  // This method does not expose any internal parameters to users.
+  const twister = new MersenneTwister19937();
+  return _generateMersenne32Randomizer(twister);
+}
+
+/**
+ * Generates a MersenneTwister19937 randomizer with 32 bits of precision.
+ *
+ * @internal
+ *
+ * @param twister The twister to use.
+ */
+function _generateMersenne32Randomizer(
+  twister: MersenneTwister19937
+): Randomizer {
+  return {
+    next(): number {
+      return twister.genrandReal2();
+    },
+    seed(seed: number | number[]): void {
+      if (typeof seed === 'number') {
+        twister.initGenrand(seed);
+      } else if (Array.isArray(seed)) {
+        twister.initByArray(seed);
+      }
+    },
+    clone(): Randomizer {
+      return _generateMersenne32Randomizer(twister.clone());
+    },
+  };
 }
