@@ -126,7 +126,7 @@ describe('faker', () => {
     });
   });
 
-  describe('clone', () => {
+  describe('clone()', () => {
     it('should create a clone that returns the same values as the original', () => {
       const clone1 = faker.clone();
       const clone2 = faker.clone();
@@ -161,7 +161,7 @@ describe('faker', () => {
     });
   });
 
-  describe('derive', () => {
+  describe('derive()', () => {
     it("should create a derived faker, that doesn't affect the original", () => {
       const seed = faker.seed();
       faker.number.int();

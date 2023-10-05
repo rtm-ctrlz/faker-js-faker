@@ -6,7 +6,7 @@ import { times } from './support/times';
 
 const NON_SEEDED_BASED_RUN = 25;
 
-describe('mersenne twister', () => {
+describe('generateMersenne32Randomizer()', () => {
   const randomizer: Randomizer = generateMersenne32Randomizer();
 
   describe.each(
@@ -45,6 +45,22 @@ describe('mersenne twister', () => {
         expect(actual).toBeGreaterThanOrEqual(0);
         expect(actual).toBeLessThan(1);
       });
+    });
+  });
+
+  describe('clone()', () => {
+    it('should return a new instance', () => {
+      const clone = randomizer.clone();
+
+      expect(clone).not.toBe(randomizer);
+    });
+
+    it('should return a new instance with the same state', () => {
+      const clone = randomizer.clone();
+
+      expect(clone.next()).toBe(randomizer.next());
+      expect(clone.next()).toBe(randomizer.next());
+      expect(clone.next()).toBe(randomizer.next());
     });
   });
 });

@@ -78,6 +78,60 @@ describe('simpleFaker', () => {
     });
   });
 
+  describe('clone()', () => {
+    it('should create a clone that returns the same values as the original', () => {
+      const clone1 = simpleFaker.clone();
+      const clone2 = simpleFaker.clone();
+      const clone3 = clone1.clone();
+
+      expect(clone1).not.toBe(simpleFaker);
+      expect(clone2).not.toBe(simpleFaker);
+      expect(clone3).not.toBe(simpleFaker);
+      expect(clone1).not.toBe(clone2);
+      expect(clone1).not.toBe(clone3);
+      expect(clone2).not.toBe(clone3);
+
+      const value0 = simpleFaker.number.int();
+      expect(clone1.number.int()).toBe(value0);
+      expect(clone2.number.int()).toBe(value0);
+      expect(clone3.number.int()).toBe(value0);
+
+      const value1 = clone1.number.int();
+      expect(simpleFaker.number.int()).toBe(value1);
+      expect(clone2.number.int()).toBe(value1);
+      expect(clone3.number.int()).toBe(value1);
+
+      const value2 = clone2.number.int();
+      expect(clone1.number.int()).toBe(value2);
+      expect(simpleFaker.number.int()).toBe(value2);
+      expect(clone3.number.int()).toBe(value2);
+
+      const value3 = clone3.number.int();
+      expect(clone1.number.int()).toBe(value3);
+      expect(clone2.number.int()).toBe(value3);
+      expect(simpleFaker.number.int()).toBe(value3);
+    });
+  });
+
+  describe('derive()', () => {
+    it("should create a derived faker, that doesn't affect the original", () => {
+      const seed = simpleFaker.seed();
+      simpleFaker.number.int();
+      const value = simpleFaker.number.int();
+
+      simpleFaker.seed(seed);
+      const derived = simpleFaker.derive();
+
+      expect(derived).not.toBe(simpleFaker);
+
+      for (let i = 0; i < derived.number.int(100); i++) {
+        derived.number.int();
+      }
+
+      expect(simpleFaker.number.int()).toBe(value);
+    });
+  });
+
   describe('defaultRefDate', () => {
     it('should be a defined', () => {
       expect(simpleFaker.defaultRefDate).toBeDefined();
