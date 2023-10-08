@@ -1,4 +1,4 @@
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import {
   writeApiDiffIndex,
   writeApiPagesIndex,
@@ -32,7 +32,7 @@ export async function generate(): Promise<void> {
   ]);
   await writeApiPagesIndex(pages.map(({ text, link }) => ({ text, link })));
   writeApiDiffIndex(
-    pages.reduce((data, { text, diff }) => ({ ...data, [text]: diff }), {})
+    Object.fromEntries(pages.map(({ text, diff }) => [text, diff]))
   );
   writeApiSearchIndex(pages);
 
