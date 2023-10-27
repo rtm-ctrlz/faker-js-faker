@@ -91,7 +91,7 @@ class MersenneTwister19937 {
    */
   constructor(options?: { mt: number[]; mti: number }) {
     if (options != null && 'mt' in options) {
-      this.mt = options.mt.slice();
+      this.mt = [...options.mt];
       this.mti = options.mti;
     } else {
       this.initGenrand(Date.now() ^ (Math.random() * 0x100000000));
