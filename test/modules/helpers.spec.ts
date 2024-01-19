@@ -1,30 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { faker, FakerError } from '../../src';
 import { luhnCheck } from '../../src/modules/helpers/luhn-check';
-import type { RecordKey } from '../../src/modules/helpers/unique';
 import { seededTests } from '../support/seeded-runs';
 import { times } from './../support/times';
 import './../vitest-extensions';
 
 const NON_SEEDED_BASED_RUN = 5;
 
-function customUniqueMethod(prefix: string = ''): string {
-  const element = faker.helpers.arrayElement(
-    Array.from({ length: 500 }, (_, index) => `Test-${index + 1}`)
-  );
-  return `${prefix}${element}`;
-}
-
 describe('helpers', () => {
   seededTests(faker, 'helpers', (t) => {
     t.describe('slugify', (t) => {
       t.it('noArgs').it('some string', 'hello world');
-    });
-
-    t.describe('replaceSymbolWithNumber', (t) => {
-      t.it('noArgs')
-        .it('only symbols', '!####')
-        .it('some string', '^1234567890ß´°!"§$%&/()=?`+#*,..-;:_');
     });
 
     t.describe('replaceSymbols', (t) => {
@@ -37,12 +23,6 @@ describe('helpers', () => {
       t.it('noArgs')
         .it('only symbols', '####-[4-9]-##!!-L')
         .it('some string', '^1234567890ß´°!"§$%&/()=?`+#*,..-;:_L');
-    });
-
-    t.describe('regexpStyleStringParse', (t) => {
-      t.it('noArgs')
-        .it('only symbols', '#{3}test[1-5]')
-        .it('some string', 'Hello !#{3}test[1-5]');
     });
 
     t.describe('fromRegExp', (t) => {
@@ -180,17 +160,10 @@ describe('helpers', () => {
       t.it('with number', 5).it('with range', { min: 1, max: 10 });
     });
 
-    t.describe('unique', (t) => {
-      t.it('with customMethod', customUniqueMethod)
-        .it('with customMethod and args', customUniqueMethod, ['prefix-1-'])
-        .it('with () => number', faker.number.int)
-        .it('with () => number and args', faker.number.int, [50]);
-    });
-
     t.describe('multiple', (t) => {
-      t.it('with only method', faker.datatype.number)
-        .it('with method and count', faker.datatype.number, { count: 5 })
-        .it('with method and count range', faker.datatype.number, {
+      t.it('with only method', faker.number.int)
+        .it('with method and count', faker.number.int, { count: 5 })
+        .it('with method and count range', faker.number.int, {
           count: { min: 1, max: 10 },
         });
     });
@@ -530,22 +503,6 @@ describe('helpers', () => {
         });
       });
 
-      describe('replaceSymbolWithNumber()', () => {
-        describe('when no symbol passed in', () => {
-          it("uses '#' by default", () => {
-            const num = faker.helpers.replaceSymbolWithNumber('#AB');
-            expect(num).toMatch(/\dAB/);
-          });
-        });
-
-        describe('when symbol passed in', () => {
-          it('replaces that symbol with integers', () => {
-            const num = faker.helpers.replaceSymbolWithNumber('#AB', 'A');
-            expect(num).toMatch(/#\dB/);
-          });
-        });
-      });
-
       describe('replaceSymbols()', () => {
         it('returns empty string with no arguments', () => {
           expect(faker.helpers.replaceSymbols()).toBe('');
@@ -597,50 +554,6 @@ describe('helpers', () => {
             /^645[5-9]-([0-9]){4,6}-([0-9]){1,2}-([0-9]){4,6}-([0-9]){4}$/
           );
           expect(number).toSatisfy(luhnCheck);
-        });
-      });
-
-      describe('regexpStyleStringParse()', () => {
-        it('returns an empty string when called without param', () => {
-          expect(faker.helpers.regexpStyleStringParse()).toBe('');
-        });
-
-        it('deals with range repeat', () => {
-          const string = faker.helpers.regexpStyleStringParse('#{5,10}');
-          expect(string.length).toBeLessThanOrEqual(10);
-          expect(string.length).toBeGreaterThanOrEqual(5);
-          expect(string).toMatch(/^#{5,10}$/);
-        });
-
-        it('flips the range when min > max', () => {
-          const string = faker.helpers.regexpStyleStringParse('#{10,5}');
-          expect(string.length).toBeLessThanOrEqual(10);
-          expect(string.length).toBeGreaterThanOrEqual(5);
-          expect(string).toMatch(/^#{5,10}$/);
-        });
-
-        it('repeats string {n} number of times', () => {
-          expect(faker.helpers.regexpStyleStringParse('%{10}')).toBe(
-            '%'.repeat(10)
-          );
-          expect(faker.helpers.regexpStyleStringParse('%{30}')).toBe(
-            '%'.repeat(30)
-          );
-          expect(faker.helpers.regexpStyleStringParse('%{5}')).toBe(
-            '%'.repeat(5)
-          );
-        });
-
-        it('creates a numerical range', () => {
-          const string = faker.helpers.regexpStyleStringParse('Hello[0-9]');
-          expect(string).toMatch(/^Hello[0-9]$/);
-        });
-
-        it('deals with multiple tokens in one string', () => {
-          const string = faker.helpers.regexpStyleStringParse(
-            'Test#{5}%{2,5}Testing**[1-5]**{10}END'
-          );
-          expect(string).toMatch(/^Test#{5}%{2,5}Testing\*\*[1-5]\*\*{10}END$/);
         });
       });
 
@@ -1008,7 +921,7 @@ describe('helpers', () => {
         });
 
         it('replaces a token with a random value for a method with an object parameter', () => {
-          const actual = faker.helpers.fake('{{random.alpha({"count": 3})}}');
+          const actual = faker.helpers.fake('{{string.alpha({"length": 3})}}');
           expect(actual).toMatch(/^[a-z]{3}$/i);
         });
 
@@ -1165,67 +1078,6 @@ describe('helpers', () => {
         });
       });
 
-      describe('unique()', () => {
-        it('should be possible to call a function with no arguments and return a result', () => {
-          const result = faker.helpers.unique(faker.internet.email);
-          expect(result).toBeTypeOf('string');
-        });
-
-        it('should be possible to call a function with arguments and return a result', () => {
-          const result = faker.helpers.unique(faker.internet.email, [
-            'fName',
-            'lName',
-            'domain',
-          ]); // third argument is provider, or domain for email
-          expect(result).toMatch(/@domain/);
-        });
-
-        it('should be possible to limit unique call by maxTime in ms', () => {
-          expect(() => {
-            faker.helpers.unique(faker.internet.protocol, [], {
-              maxTime: 1,
-              maxRetries: 9999,
-              exclude: ['https', 'http'],
-            });
-          }).toThrow(
-            new FakerError(`Exceeded maxTime: 1 for uniqueness check.
-
-May not be able to generate any more unique values with current settings.
-Try adjusting maxTime or maxRetries parameters for faker.helpers.unique().`)
-          );
-        });
-
-        it('should be possible to limit unique call by maxRetries', () => {
-          expect(() => {
-            faker.helpers.unique(faker.internet.protocol, [], {
-              maxTime: 5000,
-              maxRetries: 5,
-              exclude: ['https', 'http'],
-            });
-          }).toThrow(
-            new FakerError(`Exceeded maxRetries: 5 for uniqueness check.
-
-May not be able to generate any more unique values with current settings.
-Try adjusting maxTime or maxRetries parameters for faker.helpers.unique().`)
-          );
-        });
-
-        it('should throw a FakerError instance on error', () => {
-          expect(() => {
-            faker.helpers.unique(faker.internet.protocol, [], {
-              maxTime: 5000,
-              maxRetries: 5,
-              exclude: ['https', 'http'],
-            });
-          }).toThrow(
-            new FakerError(`Exceeded maxRetries: 5 for uniqueness check.
-
-May not be able to generate any more unique values with current settings.
-Try adjusting maxTime or maxRetries parameters for faker.helpers.unique().`)
-          );
-        });
-      });
-
       describe('multiple()', () => {
         it('should generate values from the function with a default length of 3', () => {
           const result = faker.helpers.multiple(faker.person.firstName);
@@ -1255,89 +1107,4 @@ Try adjusting maxTime or maxRetries parameters for faker.helpers.unique().`)
       });
     }
   );
-
-  // This test can be only executed once, because the unique function has a global state.
-  // See: https://github.com/faker-js/faker/issues/371
-  describe('global unique()', () => {
-    it('should be possible to exclude results as array', () => {
-      const internetProtocol = () =>
-        faker.helpers.arrayElement(['https', 'http']);
-      const result = faker.helpers.unique(internetProtocol, [], {
-        exclude: ['https'],
-      });
-      expect(result).toBe('http');
-    });
-
-    it('no conflict', () => {
-      let i = 0;
-      const method = () => `no conflict: ${i++}`;
-      expect(faker.helpers.unique(method)).toBe('no conflict: 0');
-      expect(faker.helpers.unique(method)).toBe('no conflict: 1');
-    });
-
-    it('with conflict', () => {
-      const method = () => 'with conflict: 0';
-      expect(faker.helpers.unique(method)).toBe('with conflict: 0');
-      expect(() =>
-        faker.helpers.unique(method, [], {
-          maxRetries: 1,
-        })
-      ).toThrow(
-        new FakerError(`Exceeded maxRetries: 1 for uniqueness check.
-
-May not be able to generate any more unique values with current settings.
-Try adjusting maxTime or maxRetries parameters for faker.helpers.unique().`)
-      );
-    });
-
-    it('should not mutate most of the input option properties', () => {
-      const method = () => 'options-mutate-test';
-
-      const startTime = Date.now();
-      const maxTime = 49;
-      const maxRetries = 49;
-      const currentIterations = 0;
-      const exclude: string[] = [];
-      const compare = (obj: Record<RecordKey, RecordKey>, key: RecordKey) =>
-        obj[key] === undefined ? -1 : 0;
-
-      const options = {
-        startTime,
-        maxTime,
-        maxRetries,
-        currentIterations,
-        exclude,
-        compare,
-      };
-
-      faker.helpers.unique(method, [], options);
-
-      expect(options.startTime).toBe(startTime);
-      expect(options.maxTime).toBe(maxTime);
-      expect(options.maxRetries).toBe(maxRetries);
-      // `options.currentIterations` is incremented in the `faker.helpers.unique` function.
-      expect(options.exclude).toBe(exclude);
-      expect(options.compare).toBe(compare);
-    });
-
-    it('should be possible to pass a user-specific store', () => {
-      const store: Record<string, string> = {};
-
-      const method = () => 'with conflict: 0';
-
-      expect(faker.helpers.unique(method, [], { store })).toBe(
-        'with conflict: 0'
-      );
-      expect(store).toEqual({ 'with conflict: 0': 'with conflict: 0' });
-
-      expect(() => faker.helpers.unique(method, [], { store })).toThrow();
-
-      delete store['with conflict: 0'];
-
-      expect(faker.helpers.unique(method, [], { store })).toBe(
-        'with conflict: 0'
-      );
-      expect(store).toEqual({ 'with conflict: 0': 'with conflict: 0' });
-    });
-  });
 });

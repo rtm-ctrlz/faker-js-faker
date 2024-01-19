@@ -1,5 +1,4 @@
 import { FakerError } from '../../errors/faker-error';
-import { deprecated } from '../../internal/deprecated';
 import { SimpleModuleBase } from '../../internal/module-base';
 
 /**
@@ -134,12 +133,6 @@ export class NumberModule extends SimpleModuleBase {
            * The maximum number of digits to appear after the decimal point, for example `2` will round to 2 decimal points.  Only one of `multipleOf`, `precision` or `fractionDigits` should be passed.
            */
           fractionDigits?: number;
-          /*
-           * Deprecated alias for `multipleOf`. Only one of `multipleOf`, `precision` or `fractionDigits` should be passed.
-           *
-           * @deprecated Use `multipleOf` instead.
-           */
-          precision?: number;
           /**
            * The generated number will be a multiple of this parameter. Only one of `multipleOf`, `precision` or `fractionDigits` should be passed.
            */
@@ -156,20 +149,9 @@ export class NumberModule extends SimpleModuleBase {
       min = 0,
       max = 1,
       fractionDigits,
-      precision,
-      multipleOf: originalMultipleOf = precision,
-      multipleOf = precision ??
-        (fractionDigits == null ? undefined : 10 ** -fractionDigits),
+      multipleOf: originalMultipleOf,
+      multipleOf = fractionDigits == null ? undefined : 10 ** -fractionDigits,
     } = options;
-
-    if (precision != null) {
-      deprecated({
-        deprecated: 'faker.number.float({ precision })',
-        proposed: 'faker.number.float({ multipleOf })',
-        since: '8.4',
-        until: '9.0',
-      });
-    }
 
     if (max === min) {
       return min;

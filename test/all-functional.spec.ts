@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { allLocales, Faker, RandomModule } from '../src';
+import type { allLocales, Faker } from '../src';
 import { allFakers, fakerEN } from '../src';
 import { keys } from '../src/internal/keys';
 
@@ -45,19 +45,14 @@ type SkipConfig<TModule> = Partial<
 
 const BROKEN_LOCALE_METHODS = {
   // TODO @ST-DDT 2022-03-28: these are TODOs (usually broken locale files)
-  company: {
-    suffixes: ['az'],
-    companySuffix: ['az'],
+  date: {
+    between: '*',
+    betweens: '*',
   },
   location: {
     state: ['az', 'nb_NO', 'ro_MD', 'sk'],
-    stateAbbr: ['cs_CZ', 'ro_MD', 'sk'],
     zipCode: ['en_HK'],
-    zipCodeByState: ['en_HK'],
   },
-  random: {
-    locale: '*', // locale() has been pseudo removed
-  } as SkipConfig<RandomModule>,
   string: {
     fromCharacters: '*',
   },
